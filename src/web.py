@@ -33,6 +33,12 @@ def get_key_index(pub_key: str) -> int:
         PUB_KEY_MAP.append(pub_key)
     return PUB_KEY_MAP.index(pub_key) % (len(WOOLS) - 1)
 
+def check_block_type(block_type: str) -> bool:
+    """检查该方块是否需要渲染"""
+    if block_type in ["air", "unknown", "water", "lava"]:
+        return False
+    return True
+
 def init_world(world: Model) -> None:
     # 获取 know world
     response = requests.get(f"http://{URL}/known_world_state")
@@ -45,6 +51,8 @@ def init_world(world: Model) -> None:
         #     PUB_KEY_MAP.append(pub_key)
         block_pos = block["block"]["point"]
         block_type = block["block"]["block_info"]["type_id"]
+        if not check_block_type(block_type):
+            continue
         pos = (block_pos["x"], block_pos["y"], block_pos["z"])
         world.add_block(pos, chose_block(index), immediate=False)
     # logger.info(GRASS)
@@ -62,9 +70,27 @@ def get_update(world: Model) -> None:
             block = block["block"]["block"]
             block_pos = block["point"]
             block_type = block["block_info"]["type_id"]
+            if not check_block_type(block_type):
+                continue
             pos = (block_pos["x"], block_pos["y"], block_pos["z"])
             world.add_block(pos, chose_block(index), immediate=True)
     except Exception as e:
         logger.error(f"Error processing tick update: {e}")
         logger.error(f"Data: {data}")
         raise e
+
+
+def send_block(pos: tuple[int, int, int], block_type: str) -> None:
+    """Send a block to the server."""
+    if not check_block_type(block_type):
+        return
+    data = {
+        "block": {
+            "point": {"x": pos[0], "y": pos[1], "z": pos[2]},
+            "block_info": {"type_id": block_type},
+            "pub_key": PUB_KEY_MAP[0]  # Use the first public key for now
+        }
+    }
+    response = requests.post(f"http://{URL}/add_block", json=data)
+    if response.status_code != 200:
+        logger.error(f"Failed to send block: {response.text}")

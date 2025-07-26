@@ -420,6 +420,8 @@ class Window(pyglet.window.Window):
         # When flying gravity has no effect and speed is increased.
         self.flying = True
 
+        self.counter = 0
+
         # Strafing is moving lateral to the direction you are facing,
         # e.g. moving to the left or right while continuing to face forward.
         #
@@ -847,7 +849,10 @@ class Window(pyglet.window.Window):
         self.draw_label()
         self.draw_reticle()
         from src.web import get_update
-        get_update(self.model)
+        self.counter += 1
+        if self.counter >= 30:
+            get_update(self.model)
+            self.counter = 0
 
     def draw_focused_block(self):
         """ Draw black edges around the block that is currently under the
