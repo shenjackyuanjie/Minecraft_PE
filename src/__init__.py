@@ -32,7 +32,7 @@ GRASS = tex_coords((1, 0), (0, 1), (0, 0))
 SAND = same_tex_coords(1, 1)
 BRICK = same_tex_coords(2, 0)
 STONE = same_tex_coords(2, 1)
-
+TNT = tex_coords((7, 1), (7, 3), (7, 2))
 WOOLS = {
     "RED": same_tex_coords(1, 2),
     "WHITE": same_tex_coords(2, 2),

@@ -13,7 +13,10 @@ from pyglet.graphics import TextureGroup
 from pyglet.window import key, mouse
 from lib_not_dr.loggers.config import get_logger
 
-from src import BRICK, GRASS, SAND, STONE
+
+from src import BRICK, GRASS, SAND, STONE, WOOLS, TNT
+
+from src.web import send_block, get_update, init_world, get_my_block
 
 logger = get_logger(__name__)
 
@@ -135,7 +138,6 @@ class Model(object):
     def _initialize(self):
         """ Initialize the world by placing all the blocks.
         """
-        from src.web import init_world
         init_world(self)
         # n = 80  # 1/2 width and height of world
         # s = 1  # step size
@@ -465,7 +467,7 @@ class Window(pyglet.window.Window):
         self.inventory = [BRICK, GRASS, SAND]
 
         # The current block the user can place. Hit num keys to cycle.
-        self.block = self.inventory[0]
+        self.block = get_my_block()
 
         # 是否在蹲下/起飞
         self.crouch = 0
@@ -689,11 +691,14 @@ class Window(pyglet.window.Window):
                     ((button == mouse.LEFT) and (modifiers & key.MOD_CTRL)):
                 # ON OSX, control + left click = right click.
                 if previous:
-                    self.model.add_block(previous, self.block)
-            elif button == pyglet.window.mouse.LEFT and block:
+                    self.model.add_block(previous, STONE)
+                    send_block(previous, "some_block", True)
+            elif button == mouse.LEFT and block:
                 texture = self.model.world[block]
                 if texture != STONE:
-                    self.model.remove_block(block)
+                    # self.model.remove_block(block)
+                    self.model.add_block(block, TNT)
+                    send_block(block, "air", True)
         else:
             self.set_exclusive_mouse(True)
 
@@ -848,7 +853,6 @@ class Window(pyglet.window.Window):
         self.set_2d()
         self.draw_label()
         self.draw_reticle()
-        from src.web import get_update
         self.counter += 1
         if self.counter >= 30:
             get_update(self.model)

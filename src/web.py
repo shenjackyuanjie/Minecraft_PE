@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-# import json
+import threading
 
 from src import chose_block, WOOLS
 from src.main import GRASS, SAND, BRICK, STONE
@@ -21,11 +21,21 @@ PUB_KEY_MAP = []
 
 def init_pub_key_map() -> None:
     global PUB_KEY_MAP
-    response = requests.get(f"http://{URL}/pub_key")
+    response = requests.get(f"http://{URL}/pubkey")
     data: list[int] = response.json()
     str_pubkey = str(data)
     if str_pubkey not in PUB_KEY_MAP:
         PUB_KEY_MAP.append(str_pubkey)
+
+init_pub_key_map()
+
+def get_my_block() -> list[float]:
+    """Get the texture coordinates for the player's block."""
+    init_pub_key_map()
+    if len(PUB_KEY_MAP) == 0:
+        return GRASS
+    index = get_key_index(PUB_KEY_MAP[0])
+    return chose_block(index)
 
 def get_key_index(pub_key: str) -> int:
     """Get the index of the public key in the PUB_KEY_MAP."""
@@ -69,10 +79,12 @@ def get_update(world: Model) -> None:
             index = get_key_index(str(pub_key))
             block = block["block"]["block"]
             block_pos = block["point"]
+            pos = (block_pos["x"], block_pos["y"], block_pos["z"])
             block_type = block["block_info"]["type_id"]
             if not check_block_type(block_type):
+                if pos in world.world:
+                    world.remove_block(pos)
                 continue
-            pos = (block_pos["x"], block_pos["y"], block_pos["z"])
             world.add_block(pos, chose_block(index), immediate=True)
     except Exception as e:
         logger.error(f"Error processing tick update: {e}")
@@ -80,17 +92,22 @@ def get_update(world: Model) -> None:
         raise e
 
 
-def send_block(pos: tuple[int, int, int], block_type: str) -> None:
+def send_block(pos: tuple[int, int, int], block_type: str, once: bool = True) -> None:
+    thread = threading.Thread(target=send_block_inner, args=(pos, block_type, once))
+    thread.start()
+
+def send_block_inner(pos: tuple[int, int, int], block_type: str, once: bool = True) -> None:
     """Send a block to the server."""
-    if not check_block_type(block_type):
-        return
     data = {
-        "block": {
-            "point": {"x": pos[0], "y": pos[1], "z": pos[2]},
-            "block_info": {"type_id": block_type},
-            "pub_key": PUB_KEY_MAP[0]  # Use the first public key for now
+        "duration": 100,
+        "x": pos[0],
+        "y": pos[1],
+        "z": pos[2],
+        "info": {
+            "type_id": block_type,
         }
     }
-    response = requests.post(f"http://{URL}/add_block", json=data)
+    target = "set_block_once" if once else "set_block"
+    response = requests.post(f"http://{URL}/{target}", json=data)
     if response.status_code != 200:
         logger.error(f"Failed to send block: {response.text}")
