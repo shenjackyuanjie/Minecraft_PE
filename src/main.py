@@ -582,6 +582,7 @@ class Window(pyglet.window.Window):
             # img.image.anchor_x = img.image.width // 2
             # img.image.anchor_y = img.image.height // 2
             self.bottom_images.append(img)
+        self.bottom_images[0].scale = 1.5
 
     def set_exclusive_mouse(self, exclusive):
         """If `exclusive` is True, the game will capture the mouse, if False
@@ -799,7 +800,10 @@ class Window(pyglet.window.Window):
                     # 假设 wools 是一个列表
                     self.block = list(WOOLS.values())[i]
                     self.block_name = list(WOOLS.keys())[i]
-                    break
+                    # 设置选中方块的image scale为1.5，其余为1
+                    for img in self.bottom_images:
+                        img.scale = 1
+                    self.bottom_images[i].scale = 1.5
             self.set_exclusive_mouse(True)
 
     def on_mouse_motion(self, x, y, dx, dy):

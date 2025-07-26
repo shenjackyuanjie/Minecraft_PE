@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import threading
 
-from src import chose_block, WOOLS
+from src import chose_block, WOOLS, select_block
 from src.main import GRASS, SAND, BRICK, STONE
 from typing import TYPE_CHECKING
 
@@ -70,7 +70,7 @@ def init_world(world: Model) -> None:
         if not check_block_type(block_type):
             continue
         pos = (block_pos["x"], block_pos["y"], block_pos["z"])
-        world.add_block(pos, chose_block(index), immediate=False)
+        world.add_block(pos, select_block(block_type), immediate=False)
     # logger.info(GRASS)
 
 
@@ -91,7 +91,7 @@ def get_update(world: Model) -> None:
                 if pos in world.world:
                     world.remove_block(pos)
                 continue
-            world.add_block(pos, chose_block(index), immediate=True)
+            world.add_block(pos, select_block(block_type), immediate=True)
     except Exception as e:
         logger.error(f"Error processing tick update: {e}")
         logger.error(f"Data: {data}")
