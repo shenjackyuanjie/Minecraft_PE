@@ -19,6 +19,7 @@ URL = "127.0.0.1:1416"
 
 PUB_KEY_MAP = []
 
+
 def init_pub_key_map() -> None:
     global PUB_KEY_MAP
     response = requests.get(f"http://{URL}/pubkey")
@@ -27,7 +28,9 @@ def init_pub_key_map() -> None:
     if str_pubkey not in PUB_KEY_MAP:
         PUB_KEY_MAP.append(str_pubkey)
 
+
 init_pub_key_map()
+
 
 def get_my_block() -> list[float]:
     """Get the texture coordinates for the player's block."""
@@ -37,17 +40,20 @@ def get_my_block() -> list[float]:
     index = get_key_index(PUB_KEY_MAP[0])
     return chose_block(index)
 
+
 def get_key_index(pub_key: str) -> int:
     """Get the index of the public key in the PUB_KEY_MAP."""
     if pub_key not in PUB_KEY_MAP:
         PUB_KEY_MAP.append(pub_key)
     return PUB_KEY_MAP.index(pub_key) % (len(WOOLS) - 1)
 
+
 def check_block_type(block_type: str) -> bool:
     """检查该方块是否需要渲染"""
     if block_type in ["air", "unknown", "water", "lava"]:
         return False
     return True
+
 
 def init_world(world: Model) -> None:
     # 获取 know world
@@ -96,7 +102,10 @@ def send_block(pos: tuple[int, int, int], block_type: str, once: bool = True) ->
     thread = threading.Thread(target=send_block_inner, args=(pos, block_type, once))
     thread.start()
 
-def send_block_inner(pos: tuple[int, int, int], block_type: str, once: bool = True) -> None:
+
+def send_block_inner(
+    pos: tuple[int, int, int], block_type: str, once: bool = True
+) -> None:
     """Send a block to the server."""
     data = {
         "duration": 100,
@@ -105,7 +114,7 @@ def send_block_inner(pos: tuple[int, int, int], block_type: str, once: bool = Tr
         "z": pos[2],
         "info": {
             "type_id": block_type,
-        }
+        },
     }
     target = "set_block_once" if once else "set_block"
     response = requests.post(f"http://{URL}/{target}", json=data)

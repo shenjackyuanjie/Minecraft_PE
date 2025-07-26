@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import random
 
+
 def tex_coord(x, y, n=8):
     """返回纹理方块的边界顶点。"""
     m = 1.0 / n
@@ -27,6 +28,7 @@ def same_tex_coords(x: int, y: int) -> list[float]:
     index = (x, y)
     return tex_coords(index, index, index)
 
+
 # 基础方块纹理坐标定义
 # 每个方块由顶部、底部和侧面的纹理坐标组成
 
@@ -44,23 +46,45 @@ TNT = tex_coords((7, 1), (7, 3), (7, 2))
 # 羊毛方块颜色映射
 # 每种颜色对应纹理图集中的不同位置
 WOOLS = {
-    "RED": same_tex_coords(1, 2),        # 红色羊毛
-    "WHITE": same_tex_coords(2, 2),      # 白色羊毛
-    "PURPLE": same_tex_coords(0, 2),     # 紫色羊毛
-    "YELLOW": same_tex_coords(3, 2),     # 黄色羊毛
-    "PINK": same_tex_coords(3, 1),       # 粉色羊毛
-    "ORANGE": same_tex_coords(3, 0),     # 橙色羊毛
-    "BLUE": same_tex_coords(4, 1),       # 蓝色羊毛
-    "BROWN": same_tex_coords(4, 2),      # 棕色羊毛
-    "CYAN": same_tex_coords(5, 0),       # 青色羊毛
-    "LIME": same_tex_coords(6, 0),       # 黄绿色羊毛
-    "MAGENTA": same_tex_coords(7, 0),    # 品红色羊毛
-    "GRAY": same_tex_coords(6, 1),       # 灰色羊毛
-    "LIGHT_GRAY": same_tex_coords(6, 1), # 浅灰色羊毛
-    "LIGHT_BLUE": same_tex_coords(6, 0), # 浅蓝色羊毛
-    "GREEN": same_tex_coords(5, 2),      # 绿色羊毛
-    "BLACK": same_tex_coords(4, 0),      # 黑色羊毛
+    "RED": same_tex_coords(1, 2),  # 红色羊毛
+    "WHITE": same_tex_coords(2, 2),  # 白色羊毛
+    "PURPLE": same_tex_coords(0, 2),  # 紫色羊毛
+    "YELLOW": same_tex_coords(3, 2),  # 黄色羊毛
+    "PINK": same_tex_coords(3, 1),  # 粉色羊毛
+    "ORANGE": same_tex_coords(3, 0),  # 橙色羊毛
+    "BLUE": same_tex_coords(4, 1),  # 蓝色羊毛
+    "BROWN": same_tex_coords(4, 2),  # 棕色羊毛
+    "CYAN": same_tex_coords(5, 0),  # 青色羊毛
+    "LIME": same_tex_coords(6, 0),  # 黄绿色羊毛
+    "MAGENTA": same_tex_coords(7, 0),  # 品红色羊毛
+    "GRAY": same_tex_coords(6, 1),  # 灰色羊毛
+    "LIGHT_GRAY": same_tex_coords(6, 1),  # 浅灰色羊毛
+    "LIGHT_BLUE": same_tex_coords(6, 0),  # 浅蓝色羊毛
+    "GREEN": same_tex_coords(5, 2),  # 绿色羊毛
+    "BLACK": same_tex_coords(4, 0),  # 黑色羊毛
 }
+
+import pyglet
+
+files = {
+    "red": pyglet.resource.image("image/red_wool.png"),
+    "white": pyglet.resource.image("image/white_wool.png"),
+    "purple": pyglet.resource.image("image/purple_wool.png"),
+    "yellow": pyglet.resource.image("image/yellow_wool.png"),
+    "pink": pyglet.resource.image("image/pink_wool.png"),
+    "orange": pyglet.resource.image("image/orange_wool.png"),
+    "blue": pyglet.resource.image("image/blue_wool.png"),
+    "brown": pyglet.resource.image("image/brown_wool.png"),
+    "cyan": pyglet.resource.image("image/cyan_wool.png"),
+    "lime": pyglet.resource.image("image/lime_wool.png"),
+    "magenta": pyglet.resource.image("image/magenta_wool.png"),
+    "gray": pyglet.resource.image("image/gray_wool.png"),
+    "light_gray": pyglet.resource.image("image/light_gray_wool.png"),
+    "light_blue": pyglet.resource.image("image/light_blue_wool.png"),
+    "green": pyglet.resource.image("image/green_wool.png"),
+    "black": pyglet.resource.image("image/black_wool.png"),
+}
+
 
 def chose_block(index: int | None = None) -> list[float]:
     """返回随机方块的纹理坐标。"""
