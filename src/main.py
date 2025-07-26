@@ -460,6 +460,9 @@ class Window(pyglet.window.Window):
         # The crosshairs at the center of the screen.
         self.reticle = None
 
+        # 是否在选择方块
+        self.selecting_block = False
+
         # Velocity in the y (upward) direction.
         self.dy = 0
 
@@ -493,6 +496,11 @@ class Window(pyglet.window.Window):
         # This call schedules the `update()` method to be called
         # TICKS_PER_SEC. This is the main game event loop.
         pyglet.clock.schedule_interval(self.update, 1.0 / TICKS_PER_SEC)
+
+        self.top_batch = pyglet.graphics.Batch()
+        self.mouse_pointer = pyglet.shapes.Rectangle(x=self.width//2-10, y=self.height//2-10, width=20, height=20, color=(255, 255, 255), batch=self.top_batch)
+        self.mouse_pointer.opacity = 100
+
 
     def set_exclusive_mouse(self, exclusive):
         """ If `exclusive` is True, the game will capture the mouse, if False
@@ -535,7 +543,6 @@ class Window(pyglet.window.Window):
         if any(self.strafe):
             x, y = self.rotation
             strafe = math.degrees(math.atan2(*self.strafe))
-            y_angle = math.radians(y)
             y_scale = 0.5
             x_angle = math.radians(x + strafe)
             if self.flying:
@@ -752,6 +759,8 @@ class Window(pyglet.window.Window):
         elif symbol in self.num_keys:
             index = (symbol - self.num_keys[0]) % len(self.inventory)
             self.block = self.inventory[index]
+        elif symbol == key.T:
+            self.selecting_block = True
 
     def on_key_release(self, symbol, modifiers):
         """ Called when the player releases a key. See pyglet docs for key
@@ -857,6 +866,7 @@ class Window(pyglet.window.Window):
         if self.counter >= 30:
             get_update(self.model)
             self.counter = 0
+        self.top_batch.draw()
 
     def draw_focused_block(self):
         """ Draw black edges around the block that is currently under the
@@ -910,7 +920,7 @@ def setup():
 
 
 def main():
-    window = Window(width=800, height=600, caption='Pyglet', resizable=True)
+    window = Window(width=1024, height=768, caption='edrFerd', resizable=True)
     # Hide the mouse cursor and prevent the mouse from leaving the window.
     window.set_exclusive_mouse(True)
     setup()
