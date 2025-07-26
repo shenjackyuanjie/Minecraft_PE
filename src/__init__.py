@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import random
 
 def tex_coord(x, y, n=8):
     """Return the bounding vertices of the texture square."""
@@ -50,3 +51,9 @@ WOOLS = {
     "GREEN": same_tex_coords(5, 2),
     "BLACK": same_tex_coords(4, 0),
 }
+
+def chose_block(index: int | None = None) -> list[float]:
+    """Return the texture coordinates for a random block."""
+    if index is None:
+        index = random.randint(0, len(WOOLS) - 1)
+    return list(WOOLS.values())[index % len(WOOLS)]

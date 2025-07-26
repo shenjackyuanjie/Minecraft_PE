@@ -846,6 +846,8 @@ class Window(pyglet.window.Window):
         self.set_2d()
         self.draw_label()
         self.draw_reticle()
+        from src.web import get_update
+        get_update(self.model)
 
     def draw_focused_block(self):
         """ Draw black edges around the block that is currently under the
